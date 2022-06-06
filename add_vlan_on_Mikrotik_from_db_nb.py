@@ -1,14 +1,14 @@
 from django.utils.text import slugify
- import paramiko
- import netbox.settings
- from extras.scripts import *
- from netmiko import ConnectHandler
- from routeros_ssh_connector import MikrotikDevice
- from dcim.models import *
- from extras.scripts import Script, ObjectVar
- import django_filters
- from ipam.models import *
- from tenancy.models import *
+import paramiko
+import netbox.settings
+from extras.scripts import *
+from netmiko import ConnectHandler
+from routeros_ssh_connector import MikrotikDevice
+from dcim.models import *
+from extras.scripts import Script, ObjectVar
+import django_filters
+from ipam.models import *
+from tenancy.models import *
 
    class RunCommand(Script):
       class Meta:
