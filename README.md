@@ -1,7 +1,7 @@
 # netbox-scripts
 Scripts for Network Devices
 
-pip install paramiko
+'''pip install paramiko'''
 
 pip install netmiko
 
