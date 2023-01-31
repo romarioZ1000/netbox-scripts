@@ -65,8 +65,7 @@ class RunCommand(Script):
             print("Connection timeout. Log entry created.")
             with open("error.log","a") as e:
                 e.write(time_stamp() + " " + host + " Timeout connecting to the device.\n")
-            e.close()
-
+           
         print("Succsessfully connected to the host. Executing commands from the external file:\r\n")
 
         mt_command = commands
