@@ -31,7 +31,23 @@ class RunCommand(Script):
         label = 'Name Dev',
         required = True
     )
+    iin = MultiObjectVar(
+        model=Interface,
+        label = 'trunk ports VLAN',
+        query_params={
+        'device_id': '$device'
+    }
+    )
 
+    iout = MultiObjectVar(
+        model=Interface,
+        label = 'Access ports VLAN',
+        query_params={
+        'device_id': '$device'
+    }
+    )
+
+    
     vlan_id = ObjectVar(
         model = VLAN,
         label = 'VLAN (ID)',
@@ -51,10 +67,17 @@ class RunCommand(Script):
     
         host = f'{data["device"].name}'
         vid = f'{data["vlan_id"].vid}'
-    
-##########################################################
+        trunk = f'{data["iin"].name}'
+        access = f'{data["iout"].name}'
 
-        commands = f'/interface bridge add name=Br_' + str(vid) + ' comment=from_NB_' + str(t1) + ' \n'
+        
+ ##########################################################
+
+        commands = f'/interface bridge add name=Br_' + str(vid) + ' comment=from_NB_' + str(t1) + ' \n' +\
+             f'/interface vlan add interface=' + str(trunk) + ' name=vlan_' + str(vid) + '_' + str(trunk) + ' vlan-id=' + str(vid) + ' disable=no comment=from_NB_' + str(t1) + ' \n' +\
+             f'/interface bridge port add bridge=Br_'+str(vid)+' interface='+str(acces)+' comment=from_NB_' + str(t1) + ' \n' +\
+             f'/interface bridge port add bridge=Br_'+str(vid)+' interface=vlan_' + str(vid) + '_' + str(trunk) +' comment=from_NB_' + str(t1) + ' \n'
+
 
 ######################### NEW TEST #######################
 
@@ -101,7 +124,8 @@ class RunCommand(Script):
             bridge_name = f'Br_{vid}'
             device = data.get('device')
             intf_to_bridge = data.get('bridged_interfaces')
-            bridge_interface = device.interfaces.create(type='bridge', name=bridge_name)
+            #bridge_interface = device.interfaces.create(type='bridge', name=bridge_name)
+            bridge_interface, _ = device.interfaces.get_or_create(type='bridge', name=bridge_name)
             if intf_to_bridge:
                 intf_to_bridge.update(bridge=bridge_interface)
 
