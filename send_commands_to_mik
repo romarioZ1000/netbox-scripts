@@ -61,12 +61,12 @@ class RunCommand(Script):
         try:
             ssh.connect(host,username=mt_username,password=mt_password,timeout=timeout)
 
-        except socket.timeout as e:
+        except socket.timeout:
             print("Connection timeout. Log entry created.")
-            with open("error.log","a") as e:
-                e.write(time_stamp() + " " + host + " Timeout connecting to the device.\n")
+            with open("error.log","a") as f:
+                f.write(time_stamp() + " " + host + " Timeout connecting to the device.\n")
            
-        print("Succsessfully connected to the host. Executing commands from the external file:\r\n")
+        print("Succsessfully connected to the host.")
 
         mt_command = commands
         time.sleep(.2)
