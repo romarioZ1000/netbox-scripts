@@ -38,8 +38,8 @@ class RunCommand(Script):
         )
 
     bridged_interfaces = MultiObjectVar(
-        models = Interface,
-        label = 'Interfaces belongs to bridge'
+        model = Interface,
+        label = 'Interfaces belongs to bridge',
         query_params={
             'device_id': '$device'
         }
@@ -105,6 +105,8 @@ class RunCommand(Script):
             if intf_to_bridge:
                 intf_to_bridge.update(bridge=bridge_interface)
 
+        self.log_debug(commands_applied)
+        
         return ''.join("Client:" + "\n" + commands + "\n\n\n")
 
         for line in stdout:
