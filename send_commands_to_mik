@@ -1,0 +1,90 @@
+from django.utils.text import slugify
+import paramiko
+import netbox.settings
+from extras.scripts import *
+from netmiko import ConnectHandler
+from routeros_ssh_connector import MikrotikDevice
+from dcim.models import *
+from extras.scripts import Script, ObjectVar
+import django_filters
+from ipam.models import *
+from tenancy.models import *
+import time
+import os
+from csv import DictWriter
+import datetime
+import socket
+import requests
+#import pandas as pd
+
+t = datetime.datetime.now()
+t1 = f'{t.strftime("%Y_%m_%d_%H_%M_%S")}'
+
+class RunCommand(Script):
+    class Meta:
+          name = "VLAN"
+          description = "Set VLAN"
+
+
+    device = ObjectVar(
+        model=Device,
+        label = 'Name Dev',
+    )
+
+    vlan_id = ObjectVar(
+        model = VLAN,
+        label = 'VLAN (ID)',
+        )
+
+
+
+    def run(self, data, commit):
+    
+        host = f'{data["device"].name}'
+        vid = f'{data["vlan_id"].vid}'
+    
+##########################################################
+
+        commands = f'/interface bridge add name=Br_' + str(vid) + ' comment=from_NB_' + str(t1) + ' \n'
+
+######################### NEW TEST #######################
+
+        mt_username = "admin"
+        #ssh_key = paramiko.RSAKey.from_private_key_file("key.ppk")
+        mt_password = "admin"
+        timeout = 10
+
+
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        try:
+            ssh.connect(host,username=mt_username,password=mt_password,timeout=timeout)
+
+        except socket.timeout as e:
+            print("Connection timeout. Log entry created.")
+            with open("error.log","a") as e:
+                e.write(time_stamp() + " " + host + " Timeout connecting to the device.\n")
+            e.close()
+
+        print("Succsessfully connected to the host. Executing commands from the external file:\r\n")
+
+        mt_command = commands
+        time.sleep(.2)
+        stdin, stdout, stderr = ssh.exec_command(mt_command)
+        print(mt_command)
+
+        print("\nExternal commands are executed successfully.")
+        ssh.get_transport().close()
+        ssh.close()
+
+#################################################################
+
+
+
+        return ''.join("Client:" + "\n" + commands + "\n\n\n")
+
+        for line in stdout:
+            print(line.strip('\n'))
+        ssh.close()
+
