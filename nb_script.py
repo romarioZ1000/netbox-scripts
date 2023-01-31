@@ -97,7 +97,7 @@ class RunCommand(Script):
 #################################################################
 
         # create NetBox objects if commands applied
-        if commands_applied:
+        if commands_applied and commit:
             bridge_name = f'Br_{vid}'
             device = data.get('device')
             intf_to_bridge = data.get('bridged_interfaces')
@@ -105,8 +105,13 @@ class RunCommand(Script):
             if intf_to_bridge:
                 intf_to_bridge.update(bridge=bridge_interface)
 
-        self.log_debug(commands_applied)
-        
+        self.log_debug(str(commands_applied))
+        return ''.join("Client:" + "\n" + commands + "\n\n\n")
+
+        for line in stdout:
+            print(line.strip('\n'))
+        ssh.close()
+
         return ''.join("Client:" + "\n" + commands + "\n\n\n")
 
         for line in stdout:
