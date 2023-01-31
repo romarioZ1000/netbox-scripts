@@ -1,0 +1,40 @@
+import requests
+
+API_TOKEN = "token_skfdjgsfkldgiosetu5ugoe"
+HEADERS = {'Authorization': f'Token {API_TOKEN}', 'Content-Type': 'application/json',}
+NB_URL = "http://exem.com"
+
+number_of_ints = int(input('Number of interfaces: '))
+interface_name = list(input('Interface names separated by ,: ').split(','))
+device_name = input('Device name: ')
+desc = 'some desc'
+
+
+
+def request_devices(device_name):
+    url = f'{NB_URL}/api/dcim/devices/?q={device_name}'
+    devices = requests.get(url, headers=HEADERS)
+    result = devices.json()
+    id = result["results"][0]["id"]
+    return id
+
+
+def bulk_post_interface(device_name, interface_name):
+    id = request_devices(device_name)
+    url = f'{NB_URL}/api/dcim/interfaces/?device={device_name}'
+    interface_params = []
+    for name in interface_name:
+        interface_params.append({
+                    "device": id,
+                    "name": name,
+                    "description": desc,
+                    "type": 'virtual',
+                    "enabled": True,
+                    "mode": "access",
+                    },
+        )
+
+    new_device= requests.post(url, headers=HEADERS, json=interface_params)
+    print(new_device.json())
+
+bulk_post_interface(device_name, interface_name)
